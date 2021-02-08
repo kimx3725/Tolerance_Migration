@@ -18,5 +18,5 @@ Figure 4 folder
 Figure 5 folder 
 [files]
 * 0.1cM_beta_cT.Rmd & fig5a.R- codes for creating a figure (5a)
-* o.3cM_beta_cT.Rmd & fig5b.R- codes for creating a figure (5b)
+* 0.3cM_beta_cT.Rmd & fig5b.R- codes for creating a figure (5b)
 * figure5.Rmd - codes for combining all the figures (5a & 5b) together 
