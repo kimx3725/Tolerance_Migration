@@ -1,0 +1,42 @@
+---
+title: "Untitled"
+author: "Dennis"
+date: "7/29/2020"
+output: html_document
+---
+
+```{r,message=FALSE,include=FALSE,echo=FALSE}
+source("~/research/MvsT/code/renew_code/rn_parameters/figure5/fig5a.R")
+source("~/research/MvsT/code/renew_code/rn_parameters/figure5/fig5b.R")
+```
+
+# potential fig.5: histogram
+
+```{r}
+library(gridExtra)
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+```
+
+```{r}
+# ggplot 
+pacman::p_load(ggplot2,gridExtra,reshape2,envalysis)
+theme_set(theme_publish())  
+a <- ggplot(df2_AcTbeta,aes(x=beta,y=value,fill = name)) + geom_col(position = "dodge",colour= "black") + ylim(c(0,1)) + labs(y="Fraction of partially migratory population") + scale_x_continuous(expression(paste("Transmission",~(beta))),labels=as.character(df2_AcTbeta$beta),breaks=df2_AcTbeta$beta) + scale_fill_manual(name="Groups",breaks=c("M","R"),labels=c("Migrant","Resident"),values= c("#F21A00","#3B9AB2"))+ggtitle(expression(paste((a)~~~c[M]==0.1)))+theme(legend.position = "none")
+
+b<- ggplot(df2_BcTbeta,aes(x=beta,y=value,fill = name)) + geom_col(position = "dodge",colour= "black") + ylim(c(0,1)) + scale_x_continuous(expression(paste("Transmission",~(beta))),labels=as.character(df2_BcTbeta$beta),breaks=df2_BcTbeta$beta) + scale_fill_manual(name="Groups",breaks=c("M","R"),labels=c("Migrant","Resident"),values= c("#F21A00","#3B9AB2"))+ggtitle(expression(paste((b)~~~c[M]==0.3))) + theme(axis.title.y = element_blank())
+legend <- get_legend(b)
+
+b <- b + theme(legend.position = "none")
+```
+
+```{r,width = 10, height = 4}
+grid.arrange(a,b,legend, ncol=2, nrow = 2,layout_matrix = rbind(c(1,2), c(3,3)), widths = c(2.7, 2.7), heights = c(0.4, 0.02))
+g <- arrangeGrob(a,b,legend, ncol=2, nrow = 2,layout_matrix = rbind(c(1,2), c(3,3)), widths = c(2.7, 2.7), heights = c(0.4, 0.02))
+g
+#ggsave("fig5.png",g, width = 10, height = 4)
+```
