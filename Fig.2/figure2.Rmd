@@ -1,0 +1,55 @@
+---
+title: "Untitled"
+author: "Dennis"
+date: "3/12/2020"
+output: html_document
+---
+
+```{r,message=FALSE,include=FALSE,echo=FALSE}
+source("~/research/MvsT/code/renew_code/02.17.2021.figure_edits/figure2/gammas_only_cm.R")
+source("~/research/MvsT/code/renew_code/02.17.2021.figure_edits/figure2/alpha_only_cm.R")
+```
+
+```{r}
+#pacman::p_load(lattice,latticeExtra,RColorBrewer,grid,gridExtra,mgcv,ggplot2,reshape2,scales,wesanderson,ggcorrplot,tidyr)
+par(mfrow = c(2,1))
+theme_set(theme_bw())
+pal <- wes_palette("Zissou1", 100, type = "continuous")
+b <- c(0,0.5,1) # legend breaks
+
+# gamma vs gamma 
+
+# Actual Plot Migrant Tolerant 2 pop (gammas)
+x.gamma <- df_gammas$gammaB
+y.gamma <- df_gammas$gammaA
+Mz.gamma <- df_gammas$M
+
+##initial model
+gamma.M.plot <- ggplot(df_gammas,aes(x.gamma,y.gamma)) + geom_tile(aes(fill=Mz.gamma),interpolate = TRUE) + xlab(expression(paste("Gamma B",~(gamma[B])))) + ylab(expression(paste("Gamma A",~(gamma[A]))))
+
+## modified model
+gamma.M.plot1 <- gamma.M.plot + labs(fill= "Fraction") + theme(legend.title = element_text(size = 9),legend.text = element_text(size=6)) + ggtitle(expression(paste((a)~~~gamma[A]~vs~gamma[B]))) + scale_fill_gradientn(colors=pal,limits=c(0,1),breaks=b,labels=format(b)) + scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0))
+
+# alpha vs cM (no cT)
+
+# Actual Plot Migrant Tolerant 2 pop (cm and alpha in the absence of ct)
+x.cm <- df_cmalpha$cM
+y.cm.alpha <- df_cmalpha$Alpha
+Mz.cm <- df_cmalpha$M
+
+#initial model
+cm.M.plot <- ggplot(df_cmalpha,aes(x.cm,y.cm.alpha)) + geom_tile(aes(fill=Mz.cm),interpolate = TRUE) + xlab(expression(paste("Fecundity cost of migration",~(c[M])))) + ylab(expression(paste("Infection cost",~(alpha))))
+
+# modified model
+cm.M.plot1 <- cm.M.plot + labs(fill= "Fraction") + theme(legend.title = element_text(size = 9),legend.text = element_text(size=6)) + ggtitle(expression(paste((b)~~~alpha~vs~c[M]))) + scale_fill_gradientn(colors=pal,limits=c(0,1),breaks=b,labels=format(b)) + scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0))
+```
+
+```{r,fig.height=4,fig.width=10,warning=FALSE}
+grid.arrange(gamma.M.plot1,cm.M.plot1, nrow=1, ncol=2)
+g <- arrangeGrob(gamma.M.plot1,cm.M.plot1, nrow=1, ncol=2)
+ggsave("fig2.png",g,width = 10, height = 4)
+#png('fig2.png',width=400,height=1000)
+#grid.arrange(gamma.M.plot1,cm.M.plot1,ct.M.plot1, nrow=3)
+#dev.off()
+```
+
