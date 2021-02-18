@@ -1,0 +1,65 @@
+---
+title: "fig3"
+author: "Dennis"
+date: "7/1/2020"
+output: html_document
+---
+
+```{r,message=FALSE,include=FALSE,echo=FALSE}
+source("~/research/MvsT/code/renew_code/02.17.2021.figure_edits/figure3/cT_cM.R")
+```
+
+# cT vs cM 
+
+```{r}
+pacman::p_load(lattice,latticeExtra,RColorBrewer,grid,gridExtra,mgcv,ggplot2,reshape2,scales,wesanderson,ggcorrplot,tidyr,envalysis)
+par(mfrow = c(2,1))
+theme_set(theme_bw())
+pal <- wes_palette("Zissou1", 100, type = "continuous")
+b <- c(0,0.5,1) # legend breaks
+
+# Fig. 3a
+y.ct <- cTcM3$cT
+x.cm <- cTcM3$cM
+Mz.ctcm <- cTcM3$M
+
+#initial model
+ct.M.plot <- ggplot(cTcM3,aes(x.cm,y.ct)) + geom_tile(aes(fill=Mz.ctcm),interpolate = TRUE) + ylab(expression(paste("Fecundity cost of tolerance",~(c[T])))) + xlab(expression(paste("Fecundity cost of migrant",~(c[M]))))
+
+# modified model
+ct.M.plot1 <- ct.M.plot + labs(fill= "Fraction") + theme(legend.title = element_text(size = 9),legend.text = element_text(size=6)) + ggtitle(expression(paste((a)~~~c[T]~vs~c[M]))) + scale_fill_gradientn(colors=pal,limits=c(0,1),breaks=b,labels=format(b)) + scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0))+theme(plot.margin = unit(c(1,1,1,1), "cm"))
+```
+
+```{r}
+# Fig. 3b
+
+# select only variables that cM = 0.2 
+df1_cTcM <- cTcM3 %>% filter(cM == 0.2) %>% filter(row_number() %% 2 == 0) %>% mutate(mig = "M", res = "R") 
+df1_cTcM
+
+df2_cTcM <- df1_cTcM %>% pivot_longer(M:R) %>% select(cM,cT, name, value) %>% filter(cT != 0.3) %>% filter(cT != 0.7)
+df2_cTcM
+
+# ggplot 
+theme_set(theme_publish())
+
+ct.M.plot2 <- ggplot(df2_cTcM,aes(x=cT,y=value,fill = name)) + geom_col(position = "dodge",colour= "black") + ylim(c(0,1)) + labs(y="Fraction of partially migratory population",x="cT variation") + scale_x_continuous(expression(paste("Fecundity cost of tolerance",~(c[T]))),labels=as.character(df2_cTcM$cT),breaks=df2_cTcM$cT) + scale_fill_manual(name="Groups",breaks=c("M","R"),labels=c("Migrant","Resident"),values= c("#F21A00","#3B9AB2"))+
+ggtitle(expression(paste((b)~~~c[M]==0.2)))+theme(plot.margin = unit(c(1,1,1,1), "cm"))+theme(axis.title.y = element_text(size = 10))
+```
+
+```{r}
+ct.M.plot1
+ct.M.plot2
+```
+
+
+```{r,width = 10, height = 5}
+
+grid.arrange(ct.M.plot1,ct.M.plot2, nrow = 1)
+
+g <- arrangeGrob(ct.M.plot1,ct.M.plot2, nrow = 1)
+
+g
+
+ggsave("fig3.png",g, width = 10, height = 5)
+```
